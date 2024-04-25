@@ -29,12 +29,11 @@ name: Build and deploy an app to AKS
 on:
   push:
     branches: ["main"]
-  workflow_dispatch:
 
 env:
-  AZURE_CONTAINER_REGISTRY: "your-azure-container-registry"
-  CONTAINER_NAME: "your-container-name"
-  RESOURCE_GROUP: "your-resource-group"
+  AZURE_CONTAINER_REGISTRY: "acree4bvp4jscogs"
+  CONTAINER_NAME: "catay-argo"
+  RESOURCE_GROUP: "catay-argo-hack"
 
 jobs:
   buildImage:
