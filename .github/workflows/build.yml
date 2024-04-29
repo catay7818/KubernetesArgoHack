@@ -29,6 +29,8 @@ name: Build and deploy an app to AKS
 on:
   push:
     branches: ["main"]
+    paths-ignore:
+      - "deploy/**"
 
 env:
   AZURE_CONTAINER_REGISTRY: "acree4bvp4jscogs"
@@ -58,31 +60,31 @@ jobs:
         run: |
           az acr build --image ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }} --registry ${{ env.AZURE_CONTAINER_REGISTRY }} -g ${{ env.RESOURCE_GROUP }} .
 
-  # Update-K8s-Manifests:
-  #   permissions:
-  #     contents: read
-  #     id-token: write
-  #   name: Update K8s Deployment Manifest with Image Version
-  #   needs: buildImage
-  #   runs-on: ubuntu-latest
-  #   steps:
+  Update-K8s-Manifests:
+    permissions:
+      contents: read
+      id-token: write
+    name: Update K8s Deployment Manifest with Image Version
+    needs: buildImage
+    runs-on: ubuntu-latest
+    steps:
 
-  #   # Checks out the baseline repository
-  #   - uses: actions/checkout@v2
+    # Checks out the baseline repository
+    - uses: actions/checkout@v2
 
-  #   - name: Update image name in manifest file
-  #     uses: azure/powershell@v1
-  #     with:
-  #       inlineScript: |
-  #         $line = Get-Content deploy/node-app-deployment.yml | Select-String image: | Select-Object -ExpandProperty Line
-  #         $content = Get-Content  deploy/node-app-deployment.yml
-  #         $content | ForEach-Object {$_ -replace $line,"        image: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}"} | Set-Content  deploy/node-app-deployment.yml
-  #       azPSVersion: "latest"
+    - name: Update image name in manifest file
+      uses: azure/powershell@v1
+      with:
+        inlineScript: |
+          $line = Get-Content deploy/node-app-deployment.yml | Select-String image: | Select-Object -ExpandProperty Line
+          $content = Get-Content  deploy/node-app-deployment.yml
+          $content | ForEach-Object {$_ -replace $line,"        image: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_NAME }}:${{ github.sha }}"} | Set-Content  deploy/node-app-deployment.yml
+        azPSVersion: "latest"
 
-  #   - name: Commit changes in manifest to repo
-  #     run: |
-  #       git config user.name "GitHub Actions Bot"
-  #       git config user.email ""
-  #       git add  deploy/node-app-deployment.yml
-  #       git commit -m "Update image version in K8s Deployment manifests file"
-  #       git push origin
+    - name: Commit changes in manifest to repo
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email ""
+        git add  deploy/node-app-deployment.yml
+        git commit -m "Update image version in K8s Deployment manifests file"
+        git push origin
