@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: node-app
-        image: <your-acr-name>.azurecr.io/app:<tag>
+        image: acree4bvp4jscogs.azurecr.io/catay-argo:7c61f03e82f6b3991acbbcca37d0029bf50e5500
         resources:
           requests:
             cpu: 125m
